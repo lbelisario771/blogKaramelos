@@ -9,11 +9,17 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    //Se crea para proteger las rutas de los usarios ya que en el archivo WEb.php de Routes, las rutas son creadas por el RESOURCE
+    public function __construct()
+    {
+        $this->middleware('can:admin.users.index')->only('index');
+        $this->middleware('can:admin.users.edit')->only('edit', 'update');
+      
+
+    }
+
+
+    
     public function index()
     {
         return view('admin.users.index');

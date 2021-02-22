@@ -13,22 +13,25 @@ use Illuminate\Support\Facades\Storage; //para mover las imagenes a la carpeta p
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
+    //Se crea para proteger las rutas de los usarios ya que en el archivo WEb.php de Routes, las rutas son creadas por el RESOURCE
+    public function __construct()
+    {
+        $this->middleware('can:admin.posts.index')->only('index');
+        $this->middleware('can:admin.posts.create')->only('create', 'store');
+        $this->middleware('can:admin.posts.edit')->only('edit', 'update');
+        $this->middleware('can:admin.posts.destroy')->only('destroy');
+
+    }
+
+
     public function index()
     {
         $posts = Post::all();
         return view('admin.posts.index', compact('posts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function create()
     {
         //Se usa el metodo pluck para el laravel collective tome los nombres de las categorias
@@ -38,12 +41,7 @@ class PostController extends Controller
         return view('admin.posts.create', compact('categories', 'tags'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
     public function store(PostRequest $request)
     {
         //PARA QUE LARAVEL GUARDE EN LA CARPETA PUBLIC SE CAMBIA EN CONFIG -> FILESYSTEM  (LOCAL) POR 'Public'
@@ -63,23 +61,7 @@ class PostController extends Controller
         return redirect()->route('admin.posts.edit', $post); 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Post $post)
-    {
-        return view('admin.posts.show', compact('post'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+   
     public function edit(Post $post)
     {
         //se hace referencia al  Policy asociado al User
